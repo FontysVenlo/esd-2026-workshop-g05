@@ -1,0 +1,12 @@
+{
+  "name": "esd-2026-workshop-g05",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.ts"
+  },
+  "dependencies": {
+    "graphql": "^17.1.0",
+    "graphql-yoga": "^6.0.1"
+  }
+}
