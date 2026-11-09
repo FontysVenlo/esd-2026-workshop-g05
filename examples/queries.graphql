@@ -1,0 +1,19 @@
+query PlaylistCard {
+  playlist(id: "p1") {
+    name
+  }
+}
+
+query PlaylistDetails($id: ID!, $limit: Int! = 10) {
+  playlist(id: $id) {
+    id
+    name
+    tracks(limit: $limit) {
+      id
+      title
+      artist {
+        name
+      }
+    }
+  }
+}
