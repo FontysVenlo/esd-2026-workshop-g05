@@ -1,0 +1,23 @@
+@baseUrl = http://localhost:4000
+
+### 200: { "id": "p1", "name": "Evening Coding", "trackIds": ["t1", "t2"] }
+GET {{baseUrl}}/playlists/p1
+
+### 200: { "id": "t1", "title": "Quiet Lines", "durationSeconds": 180, "artistId": "a1" }
+GET {{baseUrl}}/tracks/t1
+
+### 200: { "id": "t2", "title": "River Lights", "durationSeconds": 210, "artistId": "a1" }
+GET {{baseUrl}}/tracks/t2
+
+### Both tracks reference this artist; fetch once and reuse.
+### 200: { "id": "a1", "name": "Mira Vale" }
+GET {{baseUrl}}/artists/a1
+
+### 404: { "error": "Not found" }
+GET {{baseUrl}}/playlists/unknown
+
+### 404: { "error": "Not found" }
+GET {{baseUrl}}/tracks/unknown
+
+### 404: { "error": "Not found" }
+GET {{baseUrl}}/artists/unknown

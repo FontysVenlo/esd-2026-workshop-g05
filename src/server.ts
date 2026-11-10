@@ -1,7 +1,9 @@
 import { createServer } from "node:http";
 import { createSchema, createYoga } from "graphql-yoga";
-import { artists, playlists, tracks } from "./data.ts";
+import { playlists } from "./data.ts";
 import type { Playlist, Track } from "./data.ts";
+import { findArtist, findPlaylist, findTrack } from "./store.ts";
+import { handleRest } from "./rest.ts";
 
 const typeDefs = `
   type Artist {
@@ -30,18 +32,18 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    playlist: (_: unknown, { id }: { id: string }) => playlists.find((p) => p.id === id) ?? null,
+    playlist: (_: unknown, { id }: { id: string }) => findPlaylist(id),
     playlists: () => playlists,
   },
   Playlist: {
     tracks: (playlist: Playlist, { limit }: { limit?: number }) =>
       playlist.trackIds
         .slice(0, limit ?? undefined)
-        .map((id) => tracks.find((t) => t.id === id))
-        .filter((t): t is Track => t !== undefined),
+        .map(findTrack)
+        .filter((t): t is Track => t !== null),
   },
   Track: {
-    artist: (track: Track) => artists.find((a) => a.id === track.artistId) ?? null,
+    artist: (track: Track) => findArtist(track.artistId),
   },
 };
 
@@ -49,6 +51,8 @@ const yoga = createYoga({ schema: createSchema({ typeDefs, resolvers }) });
 
 const port = Number(process.env.PORT ?? 4000);
 
-createServer(yoga).listen(port, () => {
+createServer((req, res) => {
+  if (!handleRest(req, res)) return yoga(req, res);
+}).listen(port, () => {
   console.log(`Server läuft auf http://localhost:${port}/graphql`);
 });
