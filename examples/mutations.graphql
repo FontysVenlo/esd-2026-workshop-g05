@@ -1,0 +1,16 @@
+# Variables:
+# {
+#   "input": {
+#     "playlistId": "p1",
+#     "name": "Late Night Coding"
+#   }
+# }
+#
+# On invalid input renamePlaylist becomes null and "errors" is set
+# (extensions.code: BAD_USER_INPUT or NOT_FOUND). Stored name stays unchanged.
+mutation RenamePlaylist($input: RenamePlaylistInput!) {
+  renamePlaylist(input: $input) {
+    id
+    name
+  }
+}

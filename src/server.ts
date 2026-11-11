@@ -4,6 +4,8 @@ import { playlists } from "./data.ts";
 import type { Playlist, Track } from "./data.ts";
 import { findArtist, findPlaylist, findTrack } from "./store.ts";
 import { handleRest } from "./rest.ts";
+import { GraphQLError } from "graphql";
+import { RenameError, renamePlaylist } from "./service.ts";
 
 const typeDefs = `
   type Artist {
@@ -28,12 +30,38 @@ const typeDefs = `
     playlist(id: ID!): Playlist
     playlists: [Playlist!]!
   }
+
+  input RenamePlaylistInput {
+    playlistId: ID!
+    name: String!
+  }
+
+  type Mutation {
+    renamePlaylist(input: RenamePlaylistInput!): Playlist
+  }
 `;
 
 const resolvers = {
   Query: {
     playlist: (_: unknown, { id }: { id: string }) => findPlaylist(id),
     playlists: () => playlists,
+  },
+  Mutation: {
+    renamePlaylist: (
+      _: unknown,
+      { input }: { input: { playlistId: string; name: string } },
+    ) => {
+      try {
+        return renamePlaylist(input.playlistId, input.name);
+      } catch (error) {
+        if (error instanceof RenameError) {
+          throw new GraphQLError(error.message, {
+            extensions: { code: error.code },
+          });
+        }
+        throw error;
+      }
+    },
   },
   Playlist: {
     tracks: (playlist: Playlist, { limit }: { limit?: number }) =>
