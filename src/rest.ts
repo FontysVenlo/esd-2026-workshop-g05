@@ -1,17 +1,22 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { findArtist, findPlaylist, findTrack } from "./store.ts";
+import { findArtist, findPlaylist, findTrack, listPlaylists } from "./store.ts";
 
 // return false for other paths bc then GraphQL Yoga can handle them
 export function handleRest(req: IncomingMessage, res: ServerResponse): boolean {
   const path = new URL(req.url ?? "/", "http://localhost").pathname;
   const match = /^\/(playlists|tracks|artists)\/([^/]+)$/.exec(path);
-  if (!match) return false;
+  if (!match && path !== "/playlists") return false;
 
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   if (req.method !== "GET") {
     res.statusCode = 405;
     res.setHeader("Allow", "GET");
     res.end(JSON.stringify({ error: "Method not allowed" }));
+    return true;
+  }
+
+  if (!match) {
+    res.end(JSON.stringify(listPlaylists()));
     return true;
   }
 
