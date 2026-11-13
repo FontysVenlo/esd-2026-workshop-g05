@@ -1,5 +1,16 @@
 @baseUrl = http://localhost:4000
 
+# Expected names below assume a fresh server start.
+### 200: p1 (Evening Coding; t1, t2) and p2 (Morning Walk; t2), each with id, name and trackIds.
+GET {{baseUrl}}/playlists
+
+### 200: p1 embeds Quiet Lines and River Lights; p2 embeds River Lights. Each track embeds Mira Vale (a1).
+### Compare with PlaylistList in queries.graphql. REST also includes trackIds, durationSeconds and artistId.
+GET {{baseUrl}}/playlists?include=tracks.artist
+
+### 400: { "error": "Use include=tracks.artist exactly once" }
+GET {{baseUrl}}/playlists?include=tracks
+
 ### 200: { "id": "p1", "name": "Evening Coding", "trackIds": ["t1", "t2"] }
 GET {{baseUrl}}/playlists/p1
 
