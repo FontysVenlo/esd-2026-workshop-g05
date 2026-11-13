@@ -1,0 +1,9 @@
+# Intentionally INVALID: unknown field. Expect a validation error in "errors"
+# (data is absent), which is different from an unknown playlist (data.playlist: null).
+# Kept in its own file so it cannot block the valid operations in queries.graphql.
+query InvalidField {
+  playlist(id: "p1") {
+    id
+    doesNotExist
+  }
+}

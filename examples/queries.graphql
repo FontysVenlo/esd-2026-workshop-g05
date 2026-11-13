@@ -17,3 +17,28 @@ query PlaylistDetails($id: ID!, $limit: Int! = 10) {
     }
   }
 }
+
+# Compare with GET /playlists?include=tracks.artist (REST returns all tracks).
+query PlaylistList {
+  playlists {
+    id
+    name
+    tracks(limit: 50) {
+      id
+      title
+      artist {
+        id
+        name
+      }
+    }
+  }
+}
+
+# Variables for PlaylistDetails (choose the operation by name in the client):
+#   known playlist:    { "id": "p1", "limit": 10 }
+#   second playlist:   { "id": "p2", "limit": 1 }
+#   unknown playlist:  { "id": "does-not-exist" }   -> data.playlist is null, no errors
+# limit must be an Int between 1 and 50 (default 10). 0, -1, 51 -> BAD_USER_INPUT;
+# null, 1.5 or "abc" are rejected by GraphQL itself.
+# A document with several operations needs an operation name (operationName).
+# Invalid field example: see examples/invalid.graphql (kept separate on purpose).
